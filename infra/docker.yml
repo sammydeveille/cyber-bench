@@ -29,7 +29,7 @@ services:
     image: projectdiscovery/nuclei:latest
     command: ["sleep", "infinity"]
     volumes:
-      - ./nuclei-templates:/root/nuclei-templates
+      - ../data/nuclei:/root/nuclei-templates
 
   owasp-zap:
     image: zaproxy/zap-stable:latest

@@ -7,6 +7,7 @@ Spin up vulnerable targets, run DAST/penetration/load tests, and aggregate findi
 - [About](#about)
 - [Structure](#structure)
 - [Install](#install)
+- [Services](#services)
 
 ## About
 CyberSecurity Benchmark provides a Docker-based environment for security testing with:
@@ -33,7 +34,9 @@ npm install              # Install dependencies
 npm start                # Start all services
 ```
 
-Access services:
-- DefectDojo: http://localhost:8080
-- InfluxDB: http://localhost:8086
-- OWASP ZAP: http://localhost:8090
+## Services
+
+- **DefectDojo**: Vulnerability tracking [http://localhost:8080](http://localhost:8090)
+- **InfluxDB**: Time-series db [http://localhost:8086](http://localhost:8086)
+- **Nuclei**: Vulnerability scanner `nuclei -u <target>`
+- **OWASP Zap**: DAST testing [](http://localhost:8090)

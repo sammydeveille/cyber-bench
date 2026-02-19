@@ -3,7 +3,7 @@
   "description": "A lightweight, Docker Compose-based boilerplate for repeatable security testing",
   "scripts": {
     "env": "cp .env.example .env",
-    "start": "docker compose -f infra/docker.yml up",
+    "start": "docker compose -f infra/docker.yml up -d",
     "stop": "docker compose -f infra/docker.yml down"
   },
   "devDependencies": {
