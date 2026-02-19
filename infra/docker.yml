@@ -1,20 +1,37 @@
-version: '3.8'
-
 name: cyber-bench
 
 services:
   defectdojo:
-    image: defectdojo/defectdojo-django:latest
-    ports:
-      - "8080:8080"
+    container_name: defectdojo
+    hostname: uwsgi
+    image: defectdojo/defectdojo-django:2.36.0
+    platform: linux/amd64
     environment:
       - DD_DATABASE_URL=postgresql://defectdojo:defectdojo@postgres:5432/defectdojo
       - DD_SECRET_KEY=change-me-in-production
       - DD_ALLOWED_HOSTS=*
+      - DD_CELERY_BROKER_URL=redis://redis:6379/0
+    volumes:
+      - defectdojo-media:/app/media
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  defectdojo-nginx:
+    container_name: defectdojo-nginx
+    image: defectdojo/defectdojo-nginx:2.36.0
+    platform: linux/amd64
+    ports:
+      - "8080:8080"
+    volumes:
+      - defectdojo-media:/usr/share/nginx/html/media
+    depends_on:
+      - defectdojo
 
   influxdb:
+    container_name: influxdb
     image: influxdb:2.7
     ports:
       - "8086:8086"
@@ -26,18 +43,21 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=metrics
 
   nuclei:
+    container_name: nuclei
     image: projectdiscovery/nuclei:latest
     command: ["sleep", "infinity"]
     volumes:
       - ../data/nuclei:/root/nuclei-templates
 
   owasp-zap:
+    container_name: owasp-zap
     image: zaproxy/zap-stable:latest
     ports:
       - "8090:8090"
     command: ["zap.sh", "-daemon", "-host", "0.0.0.0", "-port", "8090", "-config", "api.addrs.addr.name=.*", "-config", "api.addrs.addr.regex=true"]
 
   postgres:
+    container_name: postgres
     image: postgres:15
     environment:
       - POSTGRES_DB=defectdojo
@@ -45,6 +65,16 @@ services:
       - POSTGRES_PASSWORD=defectdojo
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U defectdojo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    container_name: redis
+    image: redis:7-alpine
 
 volumes:
+  defectdojo-media:
   postgres-data:

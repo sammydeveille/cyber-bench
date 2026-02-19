@@ -1,42 +1,48 @@
 # CyberSecurity Benchmark 
 A lightweight, Docker Compose-based boilerplate for repeatable security testing.
 
-Spin up vulnerable targets, run DAST/penetration/load tests, and aggregate findings in DefectDojo for deduplicated tracking across multiple sites and iterations.
-
 ## Overview
 - [About](#about)
-- [Structure](#structure)
 - [Install](#install)
-- [Services](#services)
+- [Scripts](#scripts)
 
 ## About
-CyberSecurity Benchmark provides a Docker-based environment for security testing with:
-- **DefectDojo**: Centralized vulnerability management and deduplication
-- **InfluxDB**: Metrics storage for load testing results
-- **Nuclei**: Fast vulnerability scanner
-- **OWASP ZAP**: DAST proxy for web application security testing
-- **k6**: Load testing tool
 
-## Structure
-```
-cyber-bench/
-├── infra/
-│   └── docker.yml
-├── .env.example 
-├── package.json
-└── README.md
-```
+### DefectDojo
+Vulnerability management platform for tracking security findings.
+- URL: http://localhost:8080
+- Default: admin/admin (change on first login)
+- Stack: Django + nginx + PostgreSQL + Redis
+
+### InfluxDB
+Time-series database for load testing metrics.
+- URL: http://localhost:8086
+- Username: admin / Password: adminpassword
+- Org: cyberbench, Bucket: metrics
+
+### Nuclei
+Fast vulnerability scanner.
+- Execute: `docker exec nuclei nuclei -u <target>`
+- Templates: `data/nuclei/`
+
+### OWASP ZAP
+DAST proxy for web application security testing.
+- URL: http://localhost:8090
+- API enabled
 
 ## Install
 ```bash
-npm run env              # Copy .env.example to .env
-npm install              # Install dependencies
-npm start                # Start all services
+npm run env           # Copy .env.example to .env
+npm install           # Install dependencies
+npm start             # Start all services
 ```
 
-## Services
-
-- **DefectDojo**: Vulnerability tracking [http://localhost:8080](http://localhost:8090)
-- **InfluxDB**: Time-series db [http://localhost:8086](http://localhost:8086)
-- **Nuclei**: Vulnerability scanner `nuclei -u <target>`
-- **OWASP Zap**: DAST testing [](http://localhost:8090)
+## Run
+```bash
+npm run env           # Copy .env.example to .env
+npm start             # Start all services
+npm stop              # Stop all services
+npm run restart       # Restart all services
+npm run log:dd        # Tail DefectDojo logs
+npm run init:dd       # Initialize DefectDojo
+```

@@ -3,6 +3,9 @@
   "description": "A lightweight, Docker Compose-based boilerplate for repeatable security testing",
   "scripts": {
     "env": "cp .env.example .env",
+    "init:dd": "docker compose -f infra/docker.yml exec defectdojo python manage.py collectstatic --noinput",
+    "log:dd": "docker compose -f infra/docker.yml logs -f defectdojo",
+    "restart": "npm stop && npm start",
     "start": "docker compose -f infra/docker.yml up -d",
     "stop": "docker compose -f infra/docker.yml down"
   },
