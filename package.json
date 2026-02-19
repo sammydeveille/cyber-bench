@@ -1,0 +1,12 @@
+{
+  "name": "cyber-bench",
+  "description": "A lightweight, Docker Compose-based boilerplate for repeatable security testing",
+  "scripts": {
+    "env": "cp .env.example .env",
+    "start": "docker compose -f infra/docker.yml up",
+    "stop": "docker compose -f infra/docker.yml down"
+  },
+  "devDependencies": {
+    "k6": "^0.0.0"
+  }
+}
