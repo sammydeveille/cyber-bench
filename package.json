@@ -4,12 +4,11 @@
   "scripts": {
     "env": "cp .env.example .env",
     "init:dd": "docker compose -f infra/docker.yml exec defectdojo python manage.py collectstatic --noinput",
+    "init:dd:user": "docker compose -f infra/docker.yml exec defectdojo python manage.py createsuperuser",
     "log:dd": "docker compose -f infra/docker.yml logs -f defectdojo",
     "restart": "npm stop && npm start",
     "start": "docker compose -f infra/docker.yml up -d",
     "stop": "docker compose -f infra/docker.yml down"
   },
-  "devDependencies": {
-    "k6": "^0.0.0"
-  }
+  "devDependencies": {}
 }

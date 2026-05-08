@@ -6,11 +6,7 @@ services:
     hostname: uwsgi
     image: defectdojo/defectdojo-django:2.36.0
     platform: linux/amd64
-    environment:
-      - DD_DATABASE_URL=postgresql://defectdojo:defectdojo@postgres:5432/defectdojo
-      - DD_SECRET_KEY=change-me-in-production
-      - DD_ALLOWED_HOSTS=*
-      - DD_CELERY_BROKER_URL=redis://redis:6379/0
+    env_file: ../.env
     volumes:
       - defectdojo-media:/app/media
     depends_on:
@@ -35,34 +31,49 @@ services:
     image: influxdb:2.7
     ports:
       - "8086:8086"
-    environment:
-      - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=admin
-      - DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword
-      - DOCKER_INFLUXDB_INIT_ORG=cyberbench
-      - DOCKER_INFLUXDB_INIT_BUCKET=metrics
+    env_file: ../.env
+
+  juice-shop:
+    container_name: juice-shop
+    image: bkimminich/juice-shop
+    ports:
+      - "3000:3000"
 
   nuclei:
     container_name: nuclei
     image: projectdiscovery/nuclei:latest
-    command: ["sleep", "infinity"]
+    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
     volumes:
       - ../data/nuclei:/root/nuclei-templates
+
+  nmap:
+    container_name: nmap
+    image: instrumentisto/nmap
+    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
+    volumes:
+      - ../data/nmap:/data
+
+  nikto:
+    container_name: nikto
+    image: frapsoft/nikto
+    platform: linux/amd64
+    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
+    volumes:
+      - ../data/nikto:/tmp
 
   owasp-zap:
     container_name: owasp-zap
     image: zaproxy/zap-stable:latest
     ports:
       - "8090:8090"
-    command: ["zap.sh", "-daemon", "-host", "0.0.0.0", "-port", "8090", "-config", "api.addrs.addr.name=.*", "-config", "api.addrs.addr.regex=true"]
+    volumes:
+      - ../data/zap:/zap/wrk
+    command: ["zap.sh", "-daemon", "-host", "0.0.0.0", "-port", "8090", "-config", "api.addrs.addr.name=.*", "-config", "api.addrs.addr.regex=true", "-config", "api.disablekey=true"]
 
   postgres:
     container_name: postgres
     image: postgres:15
-    environment:
-      - POSTGRES_DB=defectdojo
-      - POSTGRES_USER=defectdojo
-      - POSTGRES_PASSWORD=defectdojo
+    env_file: ../.env
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
